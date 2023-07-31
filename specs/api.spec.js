@@ -1,56 +1,38 @@
 import fetch from "node-fetch";
 import {describe, expect, test} from '@jest/globals';
-import {createUser} from './helper.js';
+import {generateToken, createUser, createUserWithMoc} from '../framework/services/user.js';
 import fetchMock from 'jest-fetch-mock';
 
 fetchMock.enableMocks();
 describe('Generate token', () => {
     test('Positive check: Successful token generation, ' +
         'POST: /Account/v1/GenerateToken', async () => {
-        const response = await fetch('https://dummyjson.com/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: 'kminchelle',
-                password: '0lelplR',
-            })
-        })
-        const data = await response.json();
+        const response = await generateToken();
+
         expect(response.status).toBe(200);
-        expect(data.token).toBeTruthy();
+        expect(response.body.token).toBeTruthy();
     })
 
     test('Negative check: Failed token creation w/ password, ' +
         'POST: /Account/v1/GenerateToken', async () => {
-        const response = await fetch('https://dummyjson.com/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: 'kminchelle',
-            })
-        })
-        const data = await response.json();
+        const payload = {
+            username: 'kminchelle'
+        };
+        const response = await generateToken(payload);
         expect(response.status).toBe(400);
-        expect(data).toHaveProperty('message', 'Invalid credentials');
+        expect(response.body).toHaveProperty('message', 'Invalid credentials');
     })
 })
 
 describe('Create user', () => {
     test('Positive check: User creation successful,' +
         'POST: /Account/v1/User', async () => {
-        const response = await fetch('https://dummyjson.com/users/add', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                firstName: 'Aleksandriia',
-                lastName: 'Parkhomenko',
-                username: 'Something',
-                password: 'Test!123'
-            })
-        });
-        const data = await response.json();
-        expect(response.status).toBe(200);
-        expect(data).toMatchObject({
+        const tokenResponse = await generateToken();
+        const token = tokenResponse.body.token;
+
+        const createUserResponse = await createUser(token);
+        expect(createUserResponse.status).toBe(200);
+        expect(createUserResponse.body).toMatchObject({
             firstName: 'Aleksandriia',
             lastName: 'Parkhomenko',
             username: 'Something',
@@ -67,7 +49,7 @@ describe('Create user', () => {
             age: 250,
         };
         try {
-            await createUser(userData);
+            await createUserWithMoc(userData);
             expect(true).toBe(false);
         } catch (error) {
             expect(error.message).toBe('User already exists');
