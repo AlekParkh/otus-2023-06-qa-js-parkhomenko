@@ -1,35 +1,51 @@
-import supertest from "supertest";
 import config from "./config.js";
+import axios from "axios";
 
-const request = supertest(config.url);
-const generateToken = async (payload = config.credentials) => {
-    return await request
-        .post('/auth/login')
-        .set('Accept', 'application/json')
-        .send(payload);
-};
+const axiosInstance = axios.create({
+    baseURL: config.url,
+});
+const createUserAndGetId = async ({ userName, password }) => {
+    const response = await axiosInstance({
+        method: 'POST',
+        url: '/Account/v1/User',
+        data: {
+            userName: userName,
+            password: password
+        },
+    })
 
-const deleteUser = async (userId, token) => {
-    return await request
-        .delete(`/users/${userId}`)
-        .set('Authorization', `Bearer ${token}`);
+    return response.data.userID;
+}
+const login = async ({ userName, password }) => {
+    const response = await axiosInstance({
+        method: 'POST',
+        url: '/Account/v1/GenerateToken',
+        data: {
+            userName: userName,
+            password: password
+        }
+    })
+    return response;
+}
+const getUser = async ({userId}, token) => {
+    const response = await axiosInstance({
+        method: 'GET',
+        url: `/Account/v1/User/${userId}`,
+        headers: { Authorization: `Bearer ${token}` },
+    })
+    return response;
+}
+const deleteUser = async ({userId}, token) => {
+    const response = await axiosInstance({
+        method: 'DELETE',
+        url: `/Account/v1/User/${userId}`,
+        headers: { Authorization: `Bearer ${token}` },
+    })
+    return response;
 }
 
-const createUser = async (token) => {
-    return await request
-        .post('/users/add')
-        .set('Accept', 'application/json')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-            firstName: 'Aleksandriia',
-            lastName: 'Parkhomenko',
-            username: 'Something',
-            password: 'Test!123'
-        });
-}
 
-
-export { request, generateToken, deleteUser, createUser };
+export { login,  createUserAndGetId, getUser, deleteUser };
 
 export async function createUserWithMoc(userData) {
     const response = await fetch('https://dummyjson.com/users/add', {
@@ -43,4 +59,5 @@ export async function createUserWithMoc(userData) {
     }
     return data;
 }
+
 

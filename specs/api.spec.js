@@ -1,85 +1,89 @@
 import fetch from "node-fetch";
-import {describe, expect, test} from '@jest/globals';
-import {generateToken, createUser, createUserWithMoc} from '../framework/services/user.js';
-import fetchMock from 'jest-fetch-mock';
+import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
+import { createUserAndGetId, deleteUser, login } from '../framework/services/user.js';
+import config from "../framework/services/config.js";
 
-fetchMock.enableMocks();
-describe('Generate token', () => {
-    test('Positive check: Successful token generation, ' +
+
+describe('My group test_1', () => {
+    let userId;
+    let response;
+
+    beforeAll(async() => {
+        console.log('User created and authorized ');
+        userId = await createUserAndGetId(config.data[1]);
+        response = await login(config.data[1]);
+    });
+
+    afterAll(async() => {
+        console.log('User deleted');
+        const token = response.data.token;
+        await deleteUser({userId}, token);
+    });
+
+    test('1. Positive check: Successful token generation, ' +
         'POST: /Account/v1/GenerateToken', async () => {
-        const response = await generateToken();
-
         expect(response.status).toBe(200);
-        expect(response.body.token).toBeTruthy();
-    })
+        expect(response.data.token).toBeTruthy();
+    });
 
-    test('Negative check: Failed token creation w/ password, ' +
+    test('2. Negative check: Failed token creation w/o password, ' +
         'POST: /Account/v1/GenerateToken', async () => {
-        const payload = {
-            username: 'kminchelle'
-        };
-        const response = await generateToken(payload);
-        expect(response.status).toBe(400);
-        expect(response.body).toHaveProperty('message', 'Invalid credentials');
-    })
-})
+        try {
+            await login({userName: config.data[1].userName});
+            throw new Error('Expected 400 error, but received successful response.');
+        } catch (error) {
+            expect(error.response.status).toBe(400);
+            expect(error.response.data.message).toBe('UserName and Password required.');
+        }
+    });
 
-describe('Create user', () => {
-    test('Positive check: User creation successful,' +
+    test('3. Negative check: User creation with invalid password,' +
         'POST: /Account/v1/User', async () => {
-        const tokenResponse = await generateToken();
-        const token = tokenResponse.body.token;
+        try {
+            await createUserAndGetId(config.data[2]);
+            throw new Error('Expected 400 error, but received successful response.');
+        } catch (error) {
+            expect(error.response.status).toBe(400);
+            expect(error.response.data.message).toBe('Passwords must have at least one non alphanumeric character,' +
+                ' one digit (\'0\'-\'9\'), one uppercase (\'A\'-\'Z\'), one lowercase (\'a\'-\'z\'), one special character and Password must be eight characters or longer.');
+        }
+    });
 
-        const createUserResponse = await createUser(token);
-        expect(createUserResponse.status).toBe(200);
-        expect(createUserResponse.body).toMatchObject({
-            firstName: 'Aleksandriia',
-            lastName: 'Parkhomenko',
-            username: 'Something',
-            password: 'Test!123',
+    test('4. Negative check: Unsuccessful user creation,' +
+        'POST: /Account/v1/User', async () => {
+        try {
+            await createUserAndGetId(config.data[1]);
+            throw new Error('Expected 406 error, but received successful response.');
+        } catch (error) {
+            expect(error.response.status).toBe(406);
+            expect(error.response.data.message).toBe('User exists!');
+        }
+    })
+});
+    test('Positive check: Update user info', async () => {
+        const response = await fetch('https://dummyjson.com/users/14', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                firstName: 'Good',
+                lastName: 'Day',
+            })
+        });
+        const data = await response.json();
+        expect(response.status).toBe(200);
+        expect(data).toMatchObject({
+            firstName: 'Good',
+            lastName: 'Day'
+        });
+        const fetchedUserResponse = await fetch(`https://dummyjson.com/users/14`);
+        const fetchedUserData = await fetchedUserResponse.json();
+        expect(fetchedUserResponse.status).toBe(200);
+        expect(fetchedUserData).toMatchObject({
+            firstName: 'Enoch',
+            lastName: 'Lynch',
         });
     })
 
-    test('Negative check: User creation with error,' +
-        'POST: /Account/v1/User', async () => {
-        fetchMock.mockOnce(JSON.stringify({ error: 'User already exists' }), { status: 400 });
-        const userData = {
-            firstName: 'Muhammad',
-            lastName: 'Ovi',
-            age: 250,
-        };
-        try {
-            await createUserWithMoc(userData);
-            expect(true).toBe(false);
-        } catch (error) {
-            expect(error.message).toBe('User already exists');
-        }
-    })
-})
-
-   test('Positive check: Update user info', async () => {
-       const response = await fetch('https://dummyjson.com/users/14', {
-           method: 'PUT',
-           headers: {'Content-Type': 'application/json'},
-           body: JSON.stringify({
-               firstName: 'Good',
-               lastName: 'Day',
-           })
-       });
-       const data = await response.json();
-       expect(response.status).toBe(200);
-       expect(data).toMatchObject({
-           firstName: 'Good',
-           lastName: 'Day'
-       });
-       const fetchedUserResponse = await fetch(`https://dummyjson.com/users/14`);
-       const fetchedUserData = await fetchedUserResponse.json();
-       expect(fetchedUserResponse.status).toBe(200);
-       expect(fetchedUserData).toMatchObject({
-           firstName: 'Enoch',
-           lastName: 'Lynch',
-       });
-   })
 
 
 
