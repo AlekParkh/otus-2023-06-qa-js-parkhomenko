@@ -2,7 +2,7 @@ const config = {
     url:'https://bookstore.demoqa.com',
     data: [
         {
-            userName: 'NewUser8&',
+            userName: 'NewUser8*&',
             password: 'Test!123',
         },
         {
