@@ -9,6 +9,10 @@
     "format": "prettier --write.",
     "test": "jest"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://https://github.com/AlekParkh/otus-2023-06-qa-js-parkhomenko.git"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
