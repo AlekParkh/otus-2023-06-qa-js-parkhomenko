@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+const fetch = require('node-fetch');
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { createUserAndGetId, deleteUser, login } from '../framework/services/user.js';
 import config from "../framework/config.js";
