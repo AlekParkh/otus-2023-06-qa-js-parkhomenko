@@ -7,7 +7,9 @@
   "scripts": {
     "lint": "eslint.",
     "format": "prettier --write.",
-    "test": "jest"
+    "test": "jest",
+    "test:report": "jest --ci --reporters=default --reporters=jest-html-reporters"
+
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,8 @@
     "eslint-plugin-prettier": "^5.0.0",
     "jest": "^29.6.4",
     "jest-fetch-mock": "^3.0.3",
+    "jest-html-reporter": "^3.10.2",
+    "jest-html-reporters": "^3.1.4",
     "prettier": "^3.0.0"
   },
   "dependencies": {
