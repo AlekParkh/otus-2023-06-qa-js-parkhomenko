@@ -60,6 +60,24 @@ jobs:
         github_token: ${{ secrets.TEST_TOKEN }}
         publish_dir: ./jest-html-report
 
+    - name: Send telegram message on push
+      uses: appleboy/telegram-action@master
+      with:
+        to: 1112368171
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        photo: ./test.png
+        message: |
+          ${{ github.actor }} created commit:
+          Commit message: ${{ github.event.commits[0].message }}
+          
+          Repository: ${{ github.repository }}
+          
+          See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+  
+
+
+
+
 
 
 
