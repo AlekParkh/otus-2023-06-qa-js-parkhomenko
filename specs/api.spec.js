@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { createUserAndGetId, deleteUser, login } from '../framework/services/user.js';
-import config from "../framework/services/config.js";
+import config from "../framework/config.js";
 
 
 describe('My group test_1', () => {
