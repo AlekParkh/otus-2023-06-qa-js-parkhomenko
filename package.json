@@ -9,7 +9,6 @@
     "format": "prettier --write.",
     "test": "jest",
     "test:report": "jest --ci --reporters=default --reporters=jest-html-reporters"
-
   },
   "repository": {
     "type": "git",
