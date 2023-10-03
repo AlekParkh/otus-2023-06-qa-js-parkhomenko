@@ -8,7 +8,12 @@
     "lint": "eslint.",
     "format": "prettier --write.",
     "test": "jest",
-    "test:report": "jest --ci --reporters=default --reporters=jest-html-reporters"
+    "test:report": "jest --ci --reporters=default --reporters=jest-html-reporters",
+    "testPL": "playwright test",
+    "test:dev": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "codegen": "playwright codegen",
+    "report:show": "playwright show-report"
   },
   "repository": {
     "type": "git",
@@ -21,6 +26,8 @@
     "@babel/core": "^7.22.11",
     "@babel/plugin-transform-modules-commonjs": "^7.22.11",
     "@babel/preset-env": "^7.22.10",
+    "@playwright/test": "^1.38.1",
+    "@types/node": "^20.8.2",
     "babel-jest": "^29.6.4",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
