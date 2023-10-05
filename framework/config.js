@@ -13,6 +13,10 @@ const config = {
             userName: 'Keks',
             password: 'Robot',
         },
+        {
+            userName: 'Alek',
+            password: 'Test!123'
+        }
     ]
 }
 
