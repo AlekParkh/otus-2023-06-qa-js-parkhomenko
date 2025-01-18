@@ -41,9 +41,6 @@ jobs:
     - name: Install deps
       run: yarn install
 
-    - name: Build package
-      run: yarn build --if-present
-
     - name: Run tests
       run: yarn test:report
 
@@ -68,7 +65,7 @@ jobs:
         photo: ./test.png
         message: |
           ${{ github.actor }} created commit:
-          Commit message: ${{ github.event.commits.message }}
+          Commit message: ${{ github.event.head_commit.message || 'No commit message available' }}
           
           Repository: ${{ github.repository }}
           
