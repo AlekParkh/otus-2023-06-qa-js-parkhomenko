@@ -79,8 +79,8 @@ describe('My group test_1', () => {
         const fetchedUserData = await fetchedUserResponse.json();
         expect(fetchedUserResponse.status).toBe(200);
         expect(fetchedUserData).toMatchObject({
-            firstName: 'Enoch',
-            lastName: 'Lynch',
+            firstName: 'Charlotte',
+            lastName: 'Lopez',
         });
     })
 

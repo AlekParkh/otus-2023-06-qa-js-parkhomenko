@@ -80,7 +80,7 @@ test('Cannot auth without credentials', async ({ page }) => {
     await page.goto('/login');
     await page.getByRole('button', { name: 'Login' }).click();
     await page.getByText('Books : User Name : AlekLog out').isVisible();
-    await expect(page.getByPlaceholder('UserName')).toHaveClass(/is\-invalid/);
-    await expect(page.getByPlaceholder('Password')).toHaveClass(/is\-invalid/);
+    await expect(page.getByPlaceholder('UserName')).toHaveClass(/is-invalid/);
+    await expect(page.getByPlaceholder('Password')).toHaveClass(/is-invalid/);
 });
 
